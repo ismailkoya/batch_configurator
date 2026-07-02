@@ -41,7 +41,14 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y python3-tk
 
       - name: Install dependencies
-        run: pip install pyinstaller pyserial cryptography pillow openpyxl
+        shell: bash
+        run: |
+          # cryptography stopped publishing 32-bit Windows wheels after 41.x
+          # — pinning to 41.0.7 lets the x86 build pick a prebuilt wheel
+          # instead of trying to compile Rust + OpenSSL on the runner.
+          # 41.0.7 also has wheels for every other target we build, so we
+          # apply the pin uniformly for reproducibility.
+          pip install pyinstaller pyserial "cryptography==41.0.7" pillow openpyxl
 
       - name: Generate icon
         continue-on-error: true
