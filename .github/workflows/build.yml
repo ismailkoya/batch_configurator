@@ -1,0 +1,63 @@
+name: Build BatchConfigurator
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:   # lets you trigger manually from the Actions tab
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            arch: x64
+            out:  BatchConfigurator-win64.exe
+          - os: windows-latest
+            arch: x86
+            out:  BatchConfigurator-win32.exe
+          - os: ubuntu-latest
+            arch: x64
+            out:  BatchConfigurator-linux
+          - os: macos-13         # Intel runner
+            arch: x64
+            out:  BatchConfigurator-macos-intel
+          - os: macos-latest     # Apple Silicon runner
+            arch: arm64
+            out:  BatchConfigurator-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          architecture: ${{ matrix.arch }}
+
+      - name: Install tk (Linux only)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y python3-tk
+
+      - name: Install dependencies
+        run: pip install pyinstaller pyserial cryptography pillow openpyxl
+
+      - name: Generate icon
+        continue-on-error: true
+        run: python make_icon.py
+
+      - name: Build
+        run: pyinstaller --onefile --windowed --icon=batch_configurator.ico --name=BatchConfigurator --clean --noconfirm batch_configurator.py
+
+      - name: Rename output
+        shell: bash
+        run: |
+          cd dist
+          if [ -f BatchConfigurator.exe ]; then mv BatchConfigurator.exe "${{ matrix.out }}"
+          else mv BatchConfigurator "${{ matrix.out }}"; fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.out }}
+          path: dist/${{ matrix.out }}
