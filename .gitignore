@@ -1,0 +1,15 @@
+# Build artefacts
+build/
+dist/
+*.spec
+__pycache__/
+*.pyc
+
+# App runtime output
+batch_configurator.log
+batch_configurator.ico
+
+# Editor / OS noise
+.vscode/
+.idea/
+Thumbs.db
