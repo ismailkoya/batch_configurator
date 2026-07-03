@@ -20,9 +20,17 @@ jobs:
           - os: ubuntu-latest
             arch: x64
             out:  BatchConfigurator-linux
-          - os: macos-13         # Intel runner
-            arch: x64
-            out:  BatchConfigurator-macos-intel
+          # macos-13 (Intel) disabled — GitHub's Intel Mac runner pool is
+          # shrinking as Apple deprecates Intel hardware. Jobs queue for
+          # hours or days regardless of repo visibility. Apple Silicon has
+          # been standard since Nov 2020, so most current Mac users are on
+          # macos-arm64 anyway. If a specific customer needs an Intel Mac
+          # binary, build it locally on an Intel Mac with:
+          #   pip install pyinstaller pyserial cryptography==41.0.7 pillow openpyxl
+          #   pyinstaller --onefile --windowed --name BatchConfigurator batch_configurator.py
+          # - os: macos-13
+          #   arch: x64
+          #   out:  BatchConfigurator-macos-intel
           - os: macos-latest     # Apple Silicon runner
             arch: arm64
             out:  BatchConfigurator-macos-arm64
