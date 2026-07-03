@@ -20,9 +20,12 @@ jobs:
           - os: ubuntu-latest
             arch: x64
             out:  BatchConfigurator-linux
-          - os: macos-13         # Intel runner
-            arch: x64
-            out:  BatchConfigurator-macos-intel
+          # macos-13 (Intel) is temporarily disabled — GitHub's Intel Mac
+          # runner pool queues for hours on private repos. Re-enable once
+          # the queue behaviour is understood or we make the repo public.
+          # - os: macos-13
+          #   arch: x64
+          #   out:  BatchConfigurator-macos-intel
           - os: macos-latest     # Apple Silicon runner
             arch: arm64
             out:  BatchConfigurator-macos-arm64
